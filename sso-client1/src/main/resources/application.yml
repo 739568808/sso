@@ -1,0 +1,12 @@
+server:
+  port: 8081
+
+
+
+
+sso:
+  url:
+   prefix: http://www.sso.com:8080
+client:
+  host:
+    url: http://www.c1.com:8081
