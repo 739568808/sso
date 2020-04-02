@@ -1,5 +1,5 @@
-# sso
-参考某课堂视频实现SSO跨域单点登录demo
+# 参考某课堂视频实现SSO跨域单点登录demo
+
 
 
 sso-client1跨域系统1
