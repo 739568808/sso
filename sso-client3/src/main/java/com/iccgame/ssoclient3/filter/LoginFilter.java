@@ -1,18 +1,24 @@
-package com.iccgame.ssoclient2.filter;
+package com.iccgame.ssoclient3.filter;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Arrays;
 
 @Component
 @WebFilter(urlPatterns="/**",filterName="loginFilter")
@@ -81,7 +87,7 @@ public class LoginFilter implements Filter{
         //2、没有局部会话，重定向到统一认证中心，检查是否其他系统已经登录过
         //http://localhost:8080/checkLogin?redirectUrl=http://localhost:8081/
         redirectToSSO(req,res);
-        //业务代码
+
     }
 
     @Override

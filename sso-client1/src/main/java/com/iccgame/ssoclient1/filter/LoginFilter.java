@@ -31,7 +31,7 @@ public class LoginFilter implements Filter{
     private String CLIENT_HOST_URL;
 
     //排除不拦截的url
-    private static final String[] excludePathPatterns = { "/stuInfo/getAllStuInfoA"};
+    private static final String[] excludePathPatterns = { "/logOut"};
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -49,6 +49,7 @@ public class LoginFilter implements Filter{
         String url = req.getRequestURI();
         if (Arrays.asList(excludePathPatterns).contains(url)) {
             //放行，相当于第一种方法中LoginInterceptor返回值为true
+            reqLogOut(req);
             chain.doFilter(request, response);
             return;
         }
@@ -58,6 +59,7 @@ public class LoginFilter implements Filter{
         HttpSession session = req.getSession();
         Boolean isLogin = (Boolean)session.getAttribute("isLogin");
         if (null!=isLogin && isLogin){
+            reqLogOut(req);
             chain.doFilter(request, response);
             return;
         }
@@ -68,12 +70,15 @@ public class LoginFilter implements Filter{
             //判断token是否有认证中心生成的
             Connection.Response  resp = Jsoup.connect(SSO_URL_PREFIX + "/verify")
                     .data("token", token)
+                    .data("clientUrl",CLIENT_HOST_URL+"/logOut")
+                    .data("jsessionid",session.getId())
                     .method(Connection.Method.GET).execute();
             String isVerify = resp.body();
             if ("true".equals(isVerify)){
                 //说明token是有统一认证中心产生的，可以创建局部的会话
                 session.setAttribute("isLogin",true);
                 //放行该次请求
+                reqLogOut(req);
                 chain.doFilter(request, response);
                 return;
             }
@@ -82,7 +87,7 @@ public class LoginFilter implements Filter{
         //2、没有局部会话，重定向到统一认证中心，检查是否其他系统已经登录过
         //http://localhost:8080/checkLogin?redirectUrl=http://localhost:8081/
         redirectToSSO(req,res);
-        //业务代码
+
     }
 
     @Override
@@ -101,6 +106,10 @@ public class LoginFilter implements Filter{
             e.printStackTrace();
         }
 
+    }
+
+    private void reqLogOut(HttpServletRequest req){
+        req.setAttribute("serverLogOutUrl",SSO_URL_PREFIX+"/logOut");
     }
 }
 

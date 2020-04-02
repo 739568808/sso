@@ -1,5 +1,5 @@
 server:
   port: 8080
 
-white_list: www.sso.com|www.c1.com|www.c2.com
+white_list: www.sso.com|www.c1.com|www.c2.com|image.c1.com
 

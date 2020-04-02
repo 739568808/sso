@@ -1,0 +1,12 @@
+server:
+  port: 8083
+
+
+
+
+sso:
+  url:
+   prefix: http://www.sso.com:8080
+client:
+  host:
+    url: http://image.c1.com:8083

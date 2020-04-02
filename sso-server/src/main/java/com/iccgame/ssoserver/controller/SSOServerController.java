@@ -1,6 +1,7 @@
 package com.iccgame.ssoserver.controller;
 
 import com.iccgame.ssoserver.util.MockDatabaseUtil;
+import com.iccgame.ssoserver.vo.ClientInfoVo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -76,10 +79,29 @@ public class SSOServerController {
 
     @RequestMapping("/verify")
     @ResponseBody
-    public String verifyToken(String token){
+    public String verifyToken(String token,String clientUrl,String jsessionid){
         if (MockDatabaseUtil.T_TOKEN.contains(token)){
+            //把客户端的登出地址记录起来
+            List<ClientInfoVo> clientInfoList = MockDatabaseUtil.T_CLIENT_INFO.get(token);
+            if (clientInfoList==null){
+                clientInfoList = new ArrayList<>();
+                MockDatabaseUtil.T_CLIENT_INFO.put(token,clientInfoList);
+            }
+            ClientInfoVo vo = new ClientInfoVo();
+            vo.setClientUrl(clientUrl);
+            vo.setJsessionid(jsessionid);
+            clientInfoList.add(vo);
+
             return "true";
         }
         return "false";
+    }
+
+    @RequestMapping("/logOut")
+    public String logOut(HttpSession session){
+        //销毁全局会话
+        session.invalidate();
+
+        return "logOut";
     }
 }
