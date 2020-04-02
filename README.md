@@ -1,4 +1,5 @@
-# 参考某课堂视频实现SSO跨域单点登录demo
+# 参考某课堂视频实现SSO跨域单点登录demo,
+# 主要用到技术：springboot、cookie等实现，本democookie存储在内存中，可自行扩展用数据库或者缓存实现
 
 
 
