@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+</head>
+<body>
+    <input type="hidden" name="redirectUrl" th:value="${redirectUrl}">
+    <label>账户</label><input type="text" name="username" id="username">
+    <label>密码</label><input type="password" name="password" id="password">
+    <input type="button" onclick="send()" value="登录">
+</body>
+　　<script th:src="@{https://code.jquery.com/jquery-3.1.1.min.js}"></script>
+
+
+<script>
+    function send() {
+        $.ajax({
+            type: "GET",
+            url: "http://www.sso.com:8080/login",
+            headers:{
+                'pathvariable':'/cheackLogin',
+                'sign':'10154e1290fa0c4db64bbf6dbef9f2b74eb4f4a6',
+                'timestamp':'1585815903',
+            },
+            data:{
+                username:$('#username').val(),
+                password:$('#password').val()
+            },
+            success: function(result) {
+                alert(result);
+            }
+        });
+    }
+    
+</script>
+</html>
