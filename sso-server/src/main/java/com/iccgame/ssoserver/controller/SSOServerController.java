@@ -66,7 +66,7 @@ public class SSOServerController {
             String token = UUID.randomUUID().toString();
             //2、创建全局会话，将令牌放入会话中
             session.setAttribute("token",token);
-            //3、将令牌信息放入数据库中（redis中）
+            //TODO 3、将令牌信息放入数据库中（redis中）
             MockDatabaseUtil.addToken(token);
             //4、重定向到redirectUrl，并且把令牌信息带上
             model.addAttribute("token",token);
@@ -85,6 +85,7 @@ public class SSOServerController {
             List<ClientInfoVo> clientInfoList = MockDatabaseUtil.T_CLIENT_INFO.get(token);
             if (clientInfoList==null){
                 clientInfoList = new ArrayList<>();
+                //TODO 数据库或者缓存
                 MockDatabaseUtil.T_CLIENT_INFO.put(token,clientInfoList);
             }
             ClientInfoVo vo = new ClientInfoVo();
