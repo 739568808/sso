@@ -13,4 +13,9 @@ public class LogOutController {
         //销毁全局会话
         session.invalidate();
     }
+    @RequestMapping("/login")
+    public String login(HttpSession session){
+        //销毁全局会话
+        return "login";
+    }
 }

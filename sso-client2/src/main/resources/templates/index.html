@@ -6,7 +6,6 @@
 </head>
 <body>
 登录成功-www.c2.com
-<a th:href="${serverLogOutUrl}">退出系统</a>
-
+<script id="logOut" th:src="@{http://www.sso.com:8080/js/sso-logOut.js}" redirectUrl="http://www.c2.com:8082/login"></script>
 </body>
 </html>

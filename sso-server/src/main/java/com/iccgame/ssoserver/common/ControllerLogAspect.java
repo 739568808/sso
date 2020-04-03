@@ -19,9 +19,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-//@Aspect
-//@Component
-@Slf4j
+@Aspect
+@Component
 public class ControllerLogAspect {
     private final static Logger log = LoggerFactory.getLogger(ControllerLogAspect.class);
 

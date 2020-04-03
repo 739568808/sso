@@ -25,7 +25,7 @@ public class LoginFilter implements Filter{
     private String CLIENT_HOST_URL;
 
     //排除不拦截的url
-    private static final String[] excludePathPatterns = { "/logOut"};
+    private static final String[] excludePathPatterns = { "/logOut","/login"};
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -81,7 +81,8 @@ public class LoginFilter implements Filter{
         //2、没有局部会话，重定向到统一认证中心，检查是否其他系统已经登录过
         //http://localhost:8080/checkLogin?redirectUrl=http://localhost:8081/
         redirectToSSO(req,res);
-        //业务代码
+        //res.sendRedirect("/login");
+
     }
 
     @Override
