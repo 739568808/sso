@@ -72,13 +72,14 @@ public class SSOServerController {
      */
     @RequestMapping("/login")
     public String login(String username, String password, String redirectUrl, HttpSession session, RedirectAttributes redirectAttributes){
+        //TODO 查询数据库用户信息
         if ("admin".equals(username) && "123456".equals(password)){
             //登录验证成功
             //1、创建令牌信息
             String token = UUID.randomUUID().toString();
             //2、创建全局会话，将令牌放入会话中
             session.setAttribute("token",token);
-            //TODO 3、将令牌信息放入数据库中（redis中）
+            //3、将令牌信息放入数据库中（redis中）
             String key = redisUtils.getSSOKey(EToken.TOKEN.getName(), token);
             redisUtils.set(key,token,Long.valueOf(timeout), TimeUnit.DAYS);
             //MockDatabaseUtil.T_TOKEN.add(token);
@@ -106,7 +107,7 @@ public class SSOServerController {
 //            List<ClientInfoVo> clientInfoList = MockDatabaseUtil.T_CLIENT_INFO.get(token);
 //            if (clientInfoList==null){
 //                clientInfoList = new ArrayList<>();
-//                //TODO 数据库或者缓存
+//                //数据库或者缓存
 //                MockDatabaseUtil.T_CLIENT_INFO.put(token,clientInfoList);
 //            }
             if (CollectionUtils.isEmpty(clientInfoList)){
