@@ -86,7 +86,7 @@ public class SSOServerController {
             //4、重定向到redirectUrl，并且把令牌信息带上
             redirectAttributes.addAttribute("token",token);
             //redirectAttributes.addAttribute("username",username);
-            return "redirect:"+redirectUrl+"?token="+token;
+            return "redirect:"+redirectUrl;
         }
         //登录失败
         //redirectAttributes.addAttribute("redirectUrl",redirectUrl);

@@ -54,7 +54,8 @@ public class LoginFilter implements Filter{
             return;
         }
         System.out.println("开始拦截了................");
-
+        //1、判断请求地址是否存在
+            //TODO 不存在自行挑战
         //1、判断是否有局部的会话
         HttpSession session = req.getSession();
         Boolean isLogin = (Boolean)session.getAttribute("isLogin");
@@ -63,7 +64,7 @@ public class LoginFilter implements Filter{
             chain.doFilter(request, response);
             return;
         }
-        //判断地址栏中是否有携带token参数。
+        //2、判断地址栏中是否有携带token参数。
         String token = req.getParameter("token");
         if (!StringUtils.isEmpty(token)){
             //token地址不为空 说明地址栏中包含了token，拥有令牌

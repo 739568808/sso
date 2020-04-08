@@ -3,7 +3,7 @@ server:
 
 spring:
   redis:
-    host: 140.143.153.200
+    host: 140.143.153.240
     port: 6379
     password:
     max-idle: 20
