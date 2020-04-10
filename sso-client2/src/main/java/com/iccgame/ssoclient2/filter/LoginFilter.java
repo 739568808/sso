@@ -64,7 +64,7 @@ public class LoginFilter implements Filter{
             //判断token是否有认证中心生成的
             Connection.Response  resp = Jsoup.connect(SSO_URL_PREFIX + "/verify")
                     .data("token", token)
-                    .data("clientUrl",CLIENT_HOST_URL+"/logOut")
+                    .data("logOutUrl",CLIENT_HOST_URL+"/logOut")
                     .data("sessionid",session.getId())
                     .data("sessionType","JSESSIONID")
                     .method(Connection.Method.GET).execute();
