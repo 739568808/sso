@@ -2,23 +2,40 @@ package com.iccgame.ssoserver.vo;
 
 
 public class ClientInfoVo  {
-    private String clientUrl;
-    private String jsessionid;
+    private String logOutUrl;
+    private String sessionid;
+    private String sessionType;
     private User user;
 
-    public String getClientUrl() {
-        return clientUrl;
+    public String getLogOutUrl() {
+        return logOutUrl;
     }
 
-    public void setClientUrl(String clientUrl) {
-        this.clientUrl = clientUrl;
+    public void setLogOutUrl(String logOutUrl) {
+        this.logOutUrl = logOutUrl;
     }
 
-    public String getJsessionid() {
-        return jsessionid;
+    public String getSessionid() {
+        return sessionid;
     }
 
-    public void setJsessionid(String jsessionid) {
-        this.jsessionid = jsessionid;
+    public void setSessionid(String sessionid) {
+        this.sessionid = sessionid;
+    }
+
+    public String getSessionType() {
+        return sessionType;
+    }
+
+    public void setSessionType(String sessionType) {
+        this.sessionType = sessionType;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

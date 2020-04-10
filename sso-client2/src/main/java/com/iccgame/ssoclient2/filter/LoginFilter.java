@@ -65,7 +65,8 @@ public class LoginFilter implements Filter{
             Connection.Response  resp = Jsoup.connect(SSO_URL_PREFIX + "/verify")
                     .data("token", token)
                     .data("clientUrl",CLIENT_HOST_URL+"/logOut")
-                    .data("jsessionid",session.getId())
+                    .data("sessionid",session.getId())
+                    .data("sessionType","JSESSIONID")
                     .method(Connection.Method.GET).execute();
             String isVerify = resp.body();
             if ("true".equals(isVerify)){

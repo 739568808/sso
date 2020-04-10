@@ -27,6 +27,7 @@ public class SessionListener implements HttpSessionListener {
         System.out.println("触发了session销毁事件......");
         HttpSession session = se.getSession();
         String token = (String)session.getAttribute("token");
+        System.out.println("logOut token:"+token);
         //删除t_token表中的数据
         String tokenKey = redisUtils.getSSOKey(EToken.TOKEN.getName(), token);
         String tokenClientInfoKey = redisUtils.getSSOKey(EToken.TOKEN_CLIENT_INFO.getName(), token);
@@ -39,7 +40,7 @@ public class SessionListener implements HttpSessionListener {
             //获取出注册的子系统，依次调用子系统的登出方法
             for (ClientInfoVo vo:clientInfoList){
                 try {
-                    sendHttpRequset(vo.getClientUrl(),vo.getJsessionid());
+                    sendHttpRequset(vo.getLogOutUrl(),vo.getSessionid(),vo.getSessionType());
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -49,9 +50,17 @@ public class SessionListener implements HttpSessionListener {
         redisUtils.del(tokenClientInfoKey);
     }
 
-    private void sendHttpRequset(String url,String jsessionid) throws IOException {
-        Jsoup.connect(url)
-                .header("Cookie","JSESSIONID="+jsessionid)
-                .method(Connection.Method.POST).execute();
+    private void sendHttpRequset(String url,String sessionid,String sessionType) {
+        try {
+            Connection.Response response = Jsoup.connect(url)
+                    //.header("Cookie", "JSESSIONID=" + jsessionid)
+                    .header("Cookie", sessionType+"=" + sessionid)
+                    .method(Connection.Method.POST).execute();
+            System.out.println("status:"+response.statusCode());
+            System.out.println(response.body());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
     }
 }

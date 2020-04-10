@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,13 +72,14 @@ public class SSOServerController {
      * 登录
      */
     @RequestMapping("/login")
-    public String login(String username, String password, String redirectUrl, HttpSession session, RedirectAttributes redirectAttributes){
+    public String login(String username, String password, String redirectUrl, HttpSession session, RedirectAttributes redirectAttributes, HttpServletRequest request){
         //TODO 查询数据库用户信息
         if ("admin".equals(username) && "123456".equals(password)){
             //登录验证成功
             //1、创建令牌信息
             String token = UUID.randomUUID().toString();
             //2、创建全局会话，将令牌放入会话中
+            System.out.println("login token:"+token);
             session.setAttribute("token",token);
             //3、将令牌信息放入数据库中（redis中）
             String key = redisUtils.getSSOKey(EToken.TOKEN.getName(), token);
@@ -92,12 +94,14 @@ public class SSOServerController {
         //redirectAttributes.addAttribute("redirectUrl",redirectUrl);
 
         //return "login";
-        return "redirect:"+redirectUrl;
+        redirectAttributes.addAttribute("errMsg","Wrong account or password");
+        String referer = request.getHeader("referer");
+        return "redirect:"+referer;
     }
 
     @RequestMapping("/verify")
     @ResponseBody
-    public String verifyToken(String token,String clientUrl,String jsessionid){
+    public String verifyToken(String token,String logOutUrl,String sessionType,String sessionid){
         String tokenKey = redisUtils.getSSOKey(EToken.TOKEN.getName(), token);
         String tokenClientInfoKey = redisUtils.getSSOKey(EToken.TOKEN_CLIENT_INFO.getName(), token);
         if (redisUtils.hasKey(tokenKey)){
@@ -114,8 +118,9 @@ public class SSOServerController {
                 clientInfoList = new ArrayList<ClientInfoVo>();
             }
             ClientInfoVo vo = new ClientInfoVo();
-            vo.setClientUrl(clientUrl);
-            vo.setJsessionid(jsessionid);
+            vo.setLogOutUrl(logOutUrl);
+            vo.setSessionid(sessionid);
+            vo.setSessionType(sessionType);
             clientInfoList.add(vo);
             boolean boo = redisUtils.set(tokenClientInfoKey,JSON.toJSONString(clientInfoList),Long.valueOf(timeout), TimeUnit.DAYS);
             if (boo){
