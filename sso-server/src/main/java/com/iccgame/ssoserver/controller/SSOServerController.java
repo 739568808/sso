@@ -5,6 +5,8 @@ import com.iccgame.ssoserver.enums.EToken;
 import com.iccgame.ssoserver.util.RedisUtils;
 import com.iccgame.ssoserver.util.ResultUtil;
 import com.iccgame.ssoserver.vo.ClientInfoVo;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -72,8 +75,9 @@ public class SSOServerController {
      * 登录
      */
     @RequestMapping("/login")
-    public String login(String username, String password, String redirectUrl, HttpSession session, RedirectAttributes redirectAttributes, HttpServletRequest request){
+    public String login(String username, String password,String gameid, String redirectUrl, HttpSession session, RedirectAttributes redirectAttributes, HttpServletRequest request){
         //TODO 查询数据库用户信息
+        this.getUserInfo(username,password,gameid);
         if ("admin".equals(username) && "123456".equals(password)){
             //登录验证成功
             //1、创建令牌信息
@@ -154,6 +158,28 @@ public class SSOServerController {
             return ResultUtil.error("invalid Token");
         }
         return ResultUtil.success(clientInfoList.get(0));
+    }
+
+    /**
+     * 用户名密码认证
+     * @param username
+     * @param password
+     * @return
+     */
+    private String getUserInfo(String username,String password,String gameid) {
+        try {
+            //http://passport.t50.bcyxgame.com/login/loginapi?gameid=100&accountname=pciktest120&password=123456
+            Connection.Response response = Jsoup.connect("http://passport.t50.bcyxgame.com/login/loginapi")
+                    .data("accountname",username)
+                    .data("password",password)
+                    .data("gameid",gameid)
+                    .method(Connection.Method.POST)
+                    .execute();
+            String body = response.body();
+            return null;
+        }catch (IOException e){
+            return null;
+        }
     }
 
 
