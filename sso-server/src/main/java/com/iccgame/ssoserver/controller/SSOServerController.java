@@ -39,7 +39,7 @@ public class SSOServerController {
 
         //白名单校验
         if (!whiteListVerify(redirectUrl)){
-            return "404";
+            return "redirect:404";
         }
 
         //1、判断是否有全局的会话

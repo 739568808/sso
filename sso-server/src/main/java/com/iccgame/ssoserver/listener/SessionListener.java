@@ -56,8 +56,6 @@ public class SessionListener implements HttpSessionListener {
                     //.header("Cookie", "JSESSIONID=" + jsessionid)
                     .header("Cookie", sessionType+"=" + sessionid)
                     .method(Connection.Method.POST).execute();
-            System.out.println("status:"+response.statusCode());
-            System.out.println(response.body());
         }catch (IOException e){
             e.printStackTrace();
         }
