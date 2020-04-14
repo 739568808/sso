@@ -1,6 +1,6 @@
+var passportUrl = "http://www.sso.com:8080";//认证中心地址
 var redirectUrl = document.getElementById('login').getAttribute('redirectUrl');
 var gameid = document.getElementById('login').getAttribute('gameid');
-var passportUrl = "http://www.sso.com:8080";//认证中心地址
 var htmml = "<form id='login' method=\"post\" action=\""+passportUrl+"/login\">\n" +
     "    <input type=\"hidden\" name=\"redirectUrl\" value="+redirectUrl+">\n" +
     "    <input type=\"hidden\" name=\"gameid\" value="+gameid+">\n" +
@@ -15,29 +15,6 @@ var errMsg = getQueryVariable("errMsg");
 if(errMsg!=''&&errMsg!=null){
     htmml+="<div>"+errMsg+"</div>";
 }
-/**
- * 游戏id
- */
-if (gameid!=''&&gameid!=null){
-    SSO_Ajax.get("",function (data) {
-        //TODO  请求游戏类型
-        document.getElementById("gameName").innerText= data;
-    })
-}
-
-
-function getQueryVariable(variable)
-{
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i=0;i<vars.length;i++) {
-        var pair = vars[i].split("=");
-        if(pair[0] == variable){return pair[1];}
-    }
-    return "";
-}
-
-
 
 var SSO_Ajax = {
     get: function (url, fn) {
@@ -50,6 +27,7 @@ var SSO_Ajax = {
         //3: 请求处理中
         //4: 请求已完成，且响应已就绪
         xhr.open('GET', url, true)
+        xhr.setRequestHeader("dataType", "json");
         xhr.onreadystatechange = function () {
             //readyStatus == 4说明请求已经完成
             if(xhr.readyState == 4 && xhr.status ==200) {
@@ -76,6 +54,37 @@ var SSO_Ajax = {
     }
 
 }
+/**
+ * 游戏id
+ */
+if (gameid!=''&&gameid!=null){
+
+    SSO_Ajax.get(passportUrl+"/getGameType?gameid="+gameid,function (data) {
+        var obj = JSON.parse(data);
+
+        //TODO  请求游戏类型
+        if (obj.code==200){
+
+            document.getElementById("gameName").innerText= obj.data.gameName;
+        }
+    })
+}
+
+
+function getQueryVariable(variable)
+{
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+        var pair = vars[i].split("=");
+        if(pair[0] == variable){return pair[1];}
+    }
+    return "";
+}
+
+
+
+
 
 
 //显示登录框

@@ -1,18 +1,24 @@
 package com.iccgame.ssoclient2.filter;
 
+import java.io.IOException;
+import java.util.Arrays;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Arrays;
 
 @Component
 @WebFilter(urlPatterns="/**",filterName="loginFilter")
@@ -25,7 +31,7 @@ public class LoginFilter implements Filter{
     private String CLIENT_HOST_URL;
 
     //排除不拦截的url
-    private static final String[] excludePathPatterns = { "/logOut","/login"};
+    private static final String[] excludePathPatterns = { "/logOut","/login",".ico"};
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -48,7 +54,8 @@ public class LoginFilter implements Filter{
             return;
         }
         System.out.println("开始拦截了................");
-
+        //1、判断请求地址是否存在
+        //TODO 不存在自行挑战
         //1、判断是否有局部的会话
         HttpSession session = req.getSession();
         Boolean isLogin = (Boolean)session.getAttribute("isLogin");
@@ -57,7 +64,7 @@ public class LoginFilter implements Filter{
             chain.doFilter(request, response);
             return;
         }
-        //判断地址栏中是否有携带token参数。
+        //2、判断地址栏中是否有携带token参数。
         String token = req.getParameter("token");
         if (!StringUtils.isEmpty(token)){
             //token地址不为空 说明地址栏中包含了token，拥有令牌
@@ -82,8 +89,8 @@ public class LoginFilter implements Filter{
         //2、没有局部会话，重定向到统一认证中心，检查是否其他系统已经登录过
         //http://localhost:8080/checkLogin?redirectUrl=http://localhost:8081/
         redirectToSSO(req,res);
+        //request.getRequestDispatcher("/login").forward(request,response);
         //res.sendRedirect("/login");
-
     }
 
     @Override

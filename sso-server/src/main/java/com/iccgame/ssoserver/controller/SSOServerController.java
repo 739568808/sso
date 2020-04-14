@@ -1,6 +1,7 @@
 package com.iccgame.ssoserver.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.iccgame.ssoserver.enums.EToken;
 import com.iccgame.ssoserver.util.RedisUtils;
 import com.iccgame.ssoserver.util.ResultUtil;
@@ -19,10 +20,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Controller
 public class SSOServerController {
@@ -83,7 +83,7 @@ public class SSOServerController {
             //1、创建令牌信息
             String token = UUID.randomUUID().toString();
             //2、创建全局会话，将令牌放入会话中
-            System.out.println("login token:"+token);
+            //System.out.println("login token:"+token);
             session.setAttribute("token",token);
             //3、将令牌信息放入数据库中（redis中）
             String key = redisUtils.getSSOKey(EToken.TOKEN.getName(), token);
@@ -153,11 +153,31 @@ public class SSOServerController {
         //List<ClientInfoVo> clientInfoList = MockDatabaseUtil.T_CLIENT_INFO.get(token);
         String tokenClientInfoStr = redisUtils.get(tokenClientInfoKey);
         List<ClientInfoVo> clientInfoList = JSON.parseArray(tokenClientInfoStr, ClientInfoVo.class);
-
         if (CollectionUtils.isEmpty(clientInfoList)){
             return ResultUtil.error("invalid Token");
         }
         return ResultUtil.success(clientInfoList.get(0));
+    }
+    @RequestMapping("/getGameType")
+    @ResponseBody
+    public String getGameType(Integer gameid){
+        List<Map<String ,Object>> games = new ArrayList<>();
+        Map<String,Object> gameMap1 = new HashMap<>();
+        gameMap1.put("gameid",1);
+        gameMap1.put("gameName","破天一剑");
+        games.add(gameMap1);
+
+        Map<String,Object> gameMap2 = new HashMap<>();
+        gameMap2.put("gameid",2);
+        gameMap2.put("gameName","骑士3");
+        games.add(gameMap2);
+
+        for (Map<String,Object> map :games){
+            if (gameid==(Integer) map.get("gameid")){
+                return ResultUtil.success(map);
+            }
+        }
+        return ResultUtil.error("没有获取到游戏类型");
     }
 
     /**
@@ -173,14 +193,20 @@ public class SSOServerController {
                     .data("accountname",username)
                     .data("password",password)
                     .data("gameid",gameid)
-                    .method(Connection.Method.POST)
+                    .method(Connection.Method.GET)
                     .execute();
             String body = response.body();
+            JSONObject object = JSONObject.parseObject(body);
             return null;
         }catch (IOException e){
             return null;
         }
     }
 
+    public static void main(String[] args) {
+        List<Integer> numbers = Arrays.asList(3, 2, 2, 3, 7, 3, 5);
+        List<Integer> collect = numbers.stream().map(i -> i * i).distinct().limit(10).sorted().collect(Collectors.toList());
+        System.out.println(collect.toString());
+    }
 
 }

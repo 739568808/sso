@@ -31,7 +31,7 @@ public class LoginFilter implements Filter{
     private String CLIENT_HOST_URL;
 
     //排除不拦截的url
-    private static final String[] excludePathPatterns = { "/logOut","/login"};
+    private static final String[] excludePathPatterns = { "/logOut","/login","/favicon.ico"};
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
