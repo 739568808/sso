@@ -3,11 +3,12 @@ server:
 
 spring:
   redis:
-    host: 140.143.153.240
+    host: 127.0.0.1
     port: 6379
     password:
     max-idle: 20
     max-total: 100
     max-wait-millis: 3000
 white_list: www.sso.com|www.c1.com|www.c2.com|image.c1.com
+#white_list: www.sso.com|www.c1.com
 timeout: 14 #redi缓存时间，单位天，永不过期填 -1

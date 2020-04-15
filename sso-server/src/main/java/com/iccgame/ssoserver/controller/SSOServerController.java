@@ -76,8 +76,11 @@ public class SSOServerController {
      */
     @RequestMapping("/login")
     public String login(String username, String password,String gameid, String redirectUrl, HttpSession session, RedirectAttributes redirectAttributes, HttpServletRequest request){
+        //如果回调地址是空，则取referer
+        redirectUrl = StringUtils.isEmpty(redirectUrl)?request.getHeader("referer"):redirectUrl;
+
         //TODO 查询数据库用户信息
-        this.getUserInfo(username,password,gameid);
+        //this.getUserInfo(username,password,gameid);
         if ("admin".equals(username) && "123456".equals(password)){
             //登录验证成功
             //1、创建令牌信息
@@ -85,6 +88,7 @@ public class SSOServerController {
             //2、创建全局会话，将令牌放入会话中
             //System.out.println("login token:"+token);
             session.setAttribute("token",token);
+
             //3、将令牌信息放入数据库中（redis中）
             String key = redisUtils.getSSOKey(EToken.TOKEN.getName(), token);
             redisUtils.set(key,token,Long.valueOf(timeout), TimeUnit.DAYS);
@@ -100,7 +104,39 @@ public class SSOServerController {
         //return "login";
         redirectAttributes.addAttribute("errMsg","Wrong account or password");
         String referer = request.getHeader("referer");
-        return "redirect:"+referer;
+        return "redirect:"+redirectUrl;
+    }
+    @RequestMapping("/login2")
+    @ResponseBody
+    public String login2(String username, String password,String gameid, String redirectUrl, HttpSession session, RedirectAttributes redirectAttributes, HttpServletRequest request){
+        //如果回调地址是空，则取referer
+        redirectUrl = StringUtils.isEmpty(redirectUrl)?request.getHeader("referer"):redirectUrl;
+
+        //TODO 查询数据库用户信息
+        //this.getUserInfo(username,password,gameid);
+        if ("admin".equals(username) && "123456".equals(password)){
+            //登录验证成功
+            //1、创建令牌信息
+            String token = UUID.randomUUID().toString();
+            //2、创建全局会话，将令牌放入会话中
+            //System.out.println("login token:"+token);
+            session.setAttribute("token",token);
+            //3、将令牌信息放入数据库中（redis中）
+            String key = redisUtils.getSSOKey(EToken.TOKEN.getName(), token);
+            redisUtils.set(key,token,Long.valueOf(timeout), TimeUnit.DAYS);
+            //MockDatabaseUtil.T_TOKEN.add(token);
+            //4、重定向到redirectUrl，并且把令牌信息带上
+            redirectAttributes.addAttribute("token",token);
+            //redirectAttributes.addAttribute("username",username);
+            return ResultUtil.success(token);
+        }
+        //登录失败
+        //redirectAttributes.addAttribute("redirectUrl",redirectUrl);
+
+        //return "login";
+
+
+        return ResultUtil.error("账户名或密码错误");
     }
 
     @RequestMapping("/verify")
@@ -135,8 +171,13 @@ public class SSOServerController {
     }
 
     @RequestMapping("/logOut")
-    public String logOut(String redirectUrl,HttpSession session){
+    public String logOut(String redirectUrl,HttpSession session,HttpServletRequest request){
         //销毁全局会话
+//        String token = (String)session.getAttribute("token");
+//        if (StringUtils.isEmpty(token)){
+//            String cookie = request.getHeader("Cookie");
+//            System.out.println(cookie);
+//        }
         session.invalidate();
         return "redirect:"+redirectUrl;
     }
@@ -172,6 +213,10 @@ public class SSOServerController {
         gameMap2.put("gameName","骑士3");
         games.add(gameMap2);
 
+
+        if (CollectionUtils.isEmpty(games)){
+            return ResultUtil.error("没有获取到游戏类型");
+        }
         for (Map<String,Object> map :games){
             if (gameid==(Integer) map.get("gameid")){
                 return ResultUtil.success(map);
