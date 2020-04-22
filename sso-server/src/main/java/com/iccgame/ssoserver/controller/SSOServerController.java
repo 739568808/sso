@@ -62,7 +62,7 @@ public class SSOServerController {
         String[] whiteArr = whiteList.split("\\|");
         boolean isWhite = false;
         for (String addr:whiteArr){
-            if (redirectUrl.contains(addr)){
+            if (redirectUrl.startsWith(addr)){
                 isWhite = true;
                 break;
             }
